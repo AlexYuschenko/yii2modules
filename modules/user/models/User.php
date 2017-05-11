@@ -7,6 +7,7 @@ use yii\base\NotSupportedException;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\IdentityInterface;
+use yii\helpers\ArrayHelper;
 use app\modules\user\traits\ModuleTrait;
 
 class User extends ActiveRecord implements IdentityInterface
@@ -16,6 +17,8 @@ class User extends ActiveRecord implements IdentityInterface
     const STATUS_BLOCKED = 0;
     const STATUS_ACTIVE = 1;
     const STATUS_WAIT = 2;
+
+    public $avatarImage;
 
     /**
      * @inheritdoc
@@ -74,6 +77,10 @@ class User extends ActiveRecord implements IdentityInterface
             ['status', 'integer'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getStatusesArray())],
+
+            ['role', 'required', 'on' => ['create', 'assignment']],
+
+            [['avatarImage'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif'],
         ];
     }
 
@@ -159,7 +166,6 @@ class User extends ActiveRecord implements IdentityInterface
             return false;
         }
         $timestamp = (int) substr($token, strrpos($token, '_') + 1);
-        //$expire = Yii::$app->params['user.passwordResetTokenExpire'];
         return $timestamp + $timeout >= time();
     }
 
@@ -246,4 +252,47 @@ class User extends ActiveRecord implements IdentityInterface
         }
         return false;
     }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRoleTypes()
+    {
+        return ArrayHelper::map(Yii::$app->authManager->getRoles(), 'name', 'description');
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getUserRole($id = null)
+    {
+        if (null === $id) {
+            $Ridentity = Yii::$app->authManager->getRolesByUser($this->id);
+        } else {
+            $Ridentity = Yii::$app->authManager->getRolesByUser($id);
+        }
+        if ($Ridentity) {
+            foreach ($Ridentity as $item) {
+               $role[$item->name] = $item->name;
+            }
+        } else {
+            $role = [];
+        }
+        return implode(', ', $role);
+    }
+
+    /**
+     * Finds all users by assignment role
+     *
+     * @param  \yii\rbac\Role $role
+     * @return static|null
+     */
+    // public static function findByRole($roleName)
+    // {
+    //     $role = Yii::$app->authManager->getRole($roleName);
+    //     return static::find()
+    //         ->join('LEFT JOIN', 'auth_assignment', 'auth_assignment.user_id = id')
+    //         ->where(['auth_assignment.item_name' => $role->name])
+    //         ->all();
+    // }
 }

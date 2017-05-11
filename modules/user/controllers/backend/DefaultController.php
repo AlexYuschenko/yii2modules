@@ -12,20 +12,23 @@ use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
 use yii\helpers\Url;
 use app\modules\user\models\backend\User;
-use app\modules\user\models\UserSearch;
+use app\modules\user\models\backend\UserSearch;
 
 /**
- * UserController implements the CRUD actions for User model.
+ * DefaultController implements the CRUD actions for User model.
  */
 class DefaultController extends Controller
 {
+    /** 
+    * @inheritdoc 
+    */
     public function behaviors()
     {
         return [
             'verbs' => [
                 'class' => VerbFilter::className(),
                 'actions' => [
-                    'delete' => ['post'],
+                    'delete' => ['POST'],
                 ],
             ],
         ];
@@ -128,6 +131,9 @@ class DefaultController extends Controller
         ]);
     }
 
+    /** 
+    * @inheritdoc 
+    */
     public function actionDeleteAvatar($id)
     {
         $model = $this->findModel($id);

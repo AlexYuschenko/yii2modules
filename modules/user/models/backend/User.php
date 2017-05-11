@@ -2,6 +2,7 @@
 
 namespace app\modules\user\models\backend;
 
+use Yii;
 use yii\helpers\ArrayHelper;
 
 class User extends \app\modules\user\models\User
