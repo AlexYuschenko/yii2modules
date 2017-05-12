@@ -29,7 +29,7 @@ use app\widgets\Alert;
     } else {
         $menuItems[] = [
             'label' => Yii::t('app', 'My account') . ' (' . Yii::$app->user->identity->username . ')',
-            'url' => ['/user/default/' . Yii::$app->user->id]
+            'url' => ['/user/profile']
         ];
         $menuItems[] = [
             'label' => Yii::t('app', 'Logout'),

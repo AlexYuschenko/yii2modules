@@ -1,28 +1,28 @@
 <?php
 
-namespace app\modules\admin\traits;
+namespace app\modules\roles\traits;
 
 use Yii;
 
 /**
  * Class ModuleTrait
- * @package app\modules\admin\traits
+ * @package app\modules\roles\traits
  * Implements `getModule` method, to receive current module instance.
  */
 trait ModuleTrait
 {
     /**
-     * @var \app\modules\admin\Module|null Module instance
+     * @var \app\modules\roles\Module|null Module instance
      */
     private $_module;
 
     /**
-     * @return \app\modules\admin\Module|null Module instance
+     * @return \app\modules\roles\Module|null Module instance
      */
     public function getModule()
     {
         if ($this->_module === null) {
-            $this->_module = Yii::$app->getModule('admin');
+            $this->_module = Yii::$app->getModule('roles');
         }
         return $this->_module;
     }

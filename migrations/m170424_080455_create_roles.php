@@ -12,13 +12,19 @@ class m170424_080455_create_roles extends Migration
         $guest->description = 'Nobody';
         $rbac->add($guest);
 
+        sleep(1);
+
         $user = $rbac->createRole('user');
         $user->description = 'Can use the query UI and nothing else';
         $rbac->add($user);
 
+        sleep(1);
+
         $manager = $rbac->createRole('manager');
         $manager->description = 'Can manage entities in database, but not users';
         $rbac->add($manager);
+
+        sleep(1);
 
         $admin = $rbac->createRole('admin');
         $admin->description = 'Can do anything including managing users';
@@ -30,7 +36,7 @@ class m170424_080455_create_roles extends Migration
 
         $rbac->assign(
             $admin,
-            \app\models\User::findOne(['username' => 'admin'])->id
+            \app\modules\user\models\User::findOne(['username' => 'admin'])->id
         );
 
     }

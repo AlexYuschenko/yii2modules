@@ -30,14 +30,36 @@ if (isset($this->params['breadcrumbs'])) {
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+
+    $menuItems[] = ['label' => Yii::t('app', 'Home'), 'url' => ['/admin/default/index']];
+    $menuItems[] = [
+        'label' => Yii::t('app', 'Roles'),
+        'items' => [
+            [
+                'label' => Yii::t('app', 'Access Roles'),
+                'url'   => ['/admin/roles'],
+                'active' => $context->module->id == 'roles' && $context->action->id == 'index'
+            ],
+            [
+                'label' => Yii::t('app', 'Access Permissions'),
+                'url'   => ['/admin/roles/permission'],
+                'active' => $context->module->id == 'roles' && $context->action->id == 'permission'
+            ],
+            [
+                'label' => Yii::t('app', 'Access Rules'),
+                'url'   => ['/admin/roles/rule'],
+                'active' => $context->module->id == 'roles' && $context->action->id == 'rule'
+            ]
+        ],
+        'active' => $context->module->id == 'roles',
+    ];
+    $menuItems[] = ['label' => Yii::t('app', 'Users'), 'url' => ['/admin/user/default/index'], 'active' => $context->module->id == 'user'];
+    $menuItems[] = ['label' => Yii::t('app', 'Logout'), 'url' => ['/user/default/logout'], 'linkOptions' => ['data-method' => 'post']];
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
         'activateParents' => true,
-        'items' => array_filter([
-            ['label' => Yii::t('app', 'Home'), 'url' => ['/admin/default/index']],
-            ['label' => Yii::t('app', 'Users'), 'url' => ['/admin/user/default/index'], 'active' => $context->module->id == 'user'],
-            ['label' => Yii::t('app', 'Logout'), 'url' => ['/user/default/logout'], 'linkOptions' => ['data-method' => 'post']]
-        ]),
+        'items' => array_filter($menuItems),
     ]);
     NavBar::end();
 ?>
