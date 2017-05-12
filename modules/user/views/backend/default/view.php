@@ -2,11 +2,12 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
+use app\modules\user\widgets\AvatarColumn;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\user\models\backend\User */
 
-$this->title = $model->id;
+$this->title = $model->username;
 $this->params['breadcrumbs'][] = ['label' => Yii::t('user', 'Users'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
@@ -29,17 +30,32 @@ $this->params['breadcrumbs'][] = $this->title;
         'model' => $model,
         'attributes' => [
             'id',
+            [
+                'attribute' => 'avatar',
+                'format' => 'html',
+                'value' => Html::img(Yii::$app->urlManager->baseUrl . '/uploads/avatars/' . ($model->avatar ? $model->avatar : 'default_avatar.png'), [
+                        'alt'    => $model->first_name . ' ' . $model->last_name,
+                        'title'  => $model->first_name . ' ' . $model->last_name,
+                        'class'  => 'file-preview-image img-circle',
+                        'width'  => '50',
+                        'height' => '50'
+                    ]),
+            ],
             'username',
             'first_name',
             'last_name',
-            'avatar',
-            'auth_key',
-            'password_hash',
-            'password_reset_token',
             'email:email',
-            'status',
-            'created_at',
-            'updated_at',
+            'created_at:datetime',
+            'updated_at:datetime',
+            [
+                'attribute' => 'status',
+                'value' => $model->getStatusName(),
+            ],
+            [
+                'attribute' => 'role',
+                'format' => 'raw',
+                'value' => Html::ul($model->userRole),
+            ],
         ],
     ]) ?>
 

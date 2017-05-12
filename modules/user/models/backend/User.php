@@ -4,14 +4,18 @@ namespace app\modules\user\models\backend;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use app\modules\user\traits\ModuleTrait;
 
 class User extends \app\modules\user\models\User
 {
+    use ModuleTrait;
+
     const SCENARIO_ADMIN_CREATE = 'adminCreate';
     const SCENARIO_ADMIN_UPDATE = 'adminUpdate';
 
     public $newPassword;
     public $newPasswordRepeat;
+    public $role;
 
     /**
      * @inheritdoc
@@ -22,6 +26,7 @@ class User extends \app\modules\user\models\User
             [['newPassword', 'newPasswordRepeat'], 'required', 'on' => self::SCENARIO_ADMIN_CREATE],
             ['newPassword', 'string', 'min' => 6],
             ['newPasswordRepeat', 'compare', 'compareAttribute' => 'newPassword'],
+            ['role', 'required', 'on' => [self::SCENARIO_ADMIN_CREATE, self::SCENARIO_ADMIN_UPDATE]],
         ]);
     }
 
@@ -31,8 +36,8 @@ class User extends \app\modules\user\models\User
     public function scenarios()
     {
         $scenarios = parent::scenarios();
-        $scenarios[self::SCENARIO_ADMIN_CREATE] = ['username', 'email', 'status', 'role', 'newPassword', 'newPasswordRepeat'];
-        $scenarios[self::SCENARIO_ADMIN_UPDATE] = ['username', 'email', 'status', 'role', 'newPassword', 'newPasswordRepeat'];
+        $scenarios[self::SCENARIO_ADMIN_CREATE] = ['username', 'email', 'first_name', 'last_name', 'status', 'role', 'newPassword', 'newPasswordRepeat'];
+        $scenarios[self::SCENARIO_ADMIN_UPDATE] = ['username', 'email', 'first_name', 'last_name', 'status', 'role', 'newPassword', 'newPasswordRepeat'];
         return $scenarios;
     }
 

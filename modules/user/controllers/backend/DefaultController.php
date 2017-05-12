@@ -72,7 +72,7 @@ class DefaultController extends Controller
     {
         $model = Yii::createObject([
             'class'    => User::className(),
-            'scenario' => 'create',
+            'scenario' => User::SCENARIO_ADMIN_CREATE,
         ]);
         if ($model->load(Yii::$app->request->post())) {
             $model->avatarImage = UploadedFile::getInstance($model, 'avatarImage');
@@ -85,7 +85,12 @@ class DefaultController extends Controller
                     $model->avatarImage = null;
                 }
             }
-            if ($user = $model->signup()) {
+            if ($model->save()) {
+                $auth = Yii::$app->authManager;
+                foreach ($model->role as $key => $role) {
+                    $authRole = $auth->getRole($role);
+                    $auth->assign($authRole, $model->id);
+                }
                 Yii::$app->getSession()->setFlash('success', Yii::t('user', 'User has been created'));
                 return $this->redirect(['view', 'id' => $model->id]);
             }
@@ -106,7 +111,7 @@ class DefaultController extends Controller
     {
         Url::remember('', 'actions-redirect');
         $model = $this->findModel($id);
-        $model->scenario = 'update';
+        $model->scenario = User::SCENARIO_ADMIN_UPDATE;
 
         if ($model->load(Yii::$app->request->post())) {
             $model->avatarImage = UploadedFile::getInstance($model, 'avatarImage');
@@ -120,11 +125,20 @@ class DefaultController extends Controller
                     $model->avatarImage = null;
                 }
             }
+
             if ($model->save()) {
+                $auth = Yii::$app->authManager;
+                $auth->revokeAll($model->id);
+                foreach ($model->role as $key => $role) {
+                    $authRole = $auth->getRole($role);
+                    $auth->assign($authRole, $model->id);
+                }
                 Yii::$app->getSession()->setFlash('success', Yii::t('user', 'Account details have been updated'));
                 return $this->refresh();
             }
         }
+
+        $model->role = $model->userRole;
 
         return $this->render('update', [
             'model' => $model,
@@ -160,54 +174,6 @@ class DefaultController extends Controller
         Yii::$app->authManager->revokeAll($id);
 
         return $this->redirect(['index']);
-    }
-
-    /**
-     * This page displays form where user can assign role.
-     * @param  integer $id
-     * @return string
-     */
-    public function actionAssignment($id)
-    {
-        Url::remember('', 'actions-redirect');
-        $model = $this->findModel($id);
-        $model->scenario = 'assignment';
-
-        if ($id == Yii::$app->user->getId()) {
-            Yii::$app->getSession()->setFlash('danger', Yii::t('user', 'You can not change your own role'));
-        } else {
-            if ($model->load(Yii::$app->request->post()) && $model->updateUserRole()) {
-                Yii::$app->getSession()->setFlash('success', Yii::t('user', 'User role have been updated'));
-                return $this->refresh();
-            }
-        }
-
-        return $this->render('assignment', [
-            'model' => $model,
-        ]);
-    }
-
-    /**
-     * Blocks the user.
-     * @param  integer $id
-     * @return Response
-     */
-    public function actionBlock($id)
-    {
-        if ($id == Yii::$app->user->getId()) {
-            Yii::$app->getSession()->setFlash('danger', Yii::t('user', 'You can not block your own account'));
-        } else {
-            $user = $this->findModel($id);
-            if ($user->getIsBlocked()) {
-                $user->unblock();
-                Yii::$app->getSession()->setFlash('success', Yii::t('user', 'User has been unblocked'));
-            } else {
-                $user->block();
-                Yii::$app->getSession()->setFlash('success', Yii::t('user', 'User has been blocked'));
-            }
-        }
-
-        return $this->redirect(Url::previous('actions-redirect'));
     }
 
     /**

@@ -8,6 +8,7 @@ DIRECTORY STRUCTURE
 
       migrations/         contains modules migrations
       modules/            contains modules
+      views/              contains views
       widgets/            contains widget files
 
 
@@ -40,9 +41,11 @@ Configure routes
 
 ```php
 'urlManager' => [
-    'class' => 'yii\web\UrlManager',
     'enablePrettyUrl' => true,
     'showScriptName' => false,
+    'normalizer' => [
+        'class' => 'yii\web\UrlNormalizer',
+    ],
     'rules' => [
         [
             'class' => 'yii\web\GroupUrlRule',
@@ -50,26 +53,23 @@ Configure routes
             'routePrefix' => 'admin',
             'rules' => [
                 '' => 'default/index',
-                '<_m:[\w\-]+>' => '<_m>/default/index',
-                '<_m:[\w\-]+>/<id:\d+>' => '<_m>/default/view',
-                '<_m:[\w\-]+>/<id:\d+>/<_a:[\w-]+>' => '<_m>/default/<_a>',
-                '<_m:[\w\-]+>/<_c:[\w\-]+>/<id:\d+>' => '<_m>/<_c>/view',
-                '<_m:[\w\-]+>/<_c:[\w\-]+>/<id:\d+>/<_a:[\w\-]+>' => '<_m>/<_c>/<_a>',
-                '<_m:[\w\-]+>/<_c:[\w\-]+>' => '<_m>/<_c>/index',
+                '<module:[\w\-]+>' => '<module>/default/index',
+                '<module:[\w\-]+>/<id:\d+>' => '<module>/default/view',
+                '<module:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/default/<action>',
+                '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/view',
+                '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
+                '<module:[\w\-]+>/<controller:[\w\-]+>' => '<module>/<controller>/index',
             ],
         ],
- 
-        '' => 'main/default/index',
-        'contact' => 'main/contact/index',
-        '<_a:error>' => 'main/default/<_a>',
- 
-        '<_a:(login|logout|signup|email-confirm|password-reset-request|password-reset)>' => 'user/default/<_a>',
- 
-        '<_m:[\w\-]+>' => '<_m>/default/index',
-        '<_m:[\w\-]+>/<_c:[\w\-]+>' => '<_m>/<_c>/index',
-        '<_m:[\w\-]+>/<_c:[\w\-]+>/<_a:[\w-]+>' => '<_m>/<_c>/<_a>',
-        '<_m:[\w\-]+>/<_c:[\w\-]+>/<id:\d+>' => '<_m>/<_c>/view',
-        '<_m:[\w\-]+>/<_c:[\w\-]+>/<id:\d+>/<_a:[\w\-]+>' => '<_m>/<_c>/<_a>',
+        '' => 'site/default/index',
+        'contact' => 'site/contact/index',
+        '<action:error>' => 'site/default/<action>',
+        '<action:(login|logout|signup|email-confirm|password-reset-request|password-reset)>' => 'user/default/<action>',
+        '<module:[\w\-]+>' => '<module>/default/index',
+        '<module:[\w\-]+>/<controller:[\w\-]+>' => '<module>/<controller>/index',
+        '<module:[\w\-]+>/<controller:[\w\-]+>/<action:[\w-]+>' => '<module>/<controller>/<action>',
+        '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/view',
+        '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
     ],
 ],
 ```

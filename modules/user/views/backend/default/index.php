@@ -52,8 +52,11 @@ $this->params['breadcrumbs'][] = $this->title;
             'last_name',
             [
                 'attribute' => 'role',
-                'value' => 'userRole',
+                'format' => 'raw',
                 'filter' => ArrayHelper::map(Yii::$app->authManager->getRoles(), 'name', 'name'),
+                'value' => function($model) {
+                    return Html::ul($model->userRole);
+                },
                 'options' => [
                     'style' => 'width:150px;',
                 ],

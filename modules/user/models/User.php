@@ -75,10 +75,9 @@ class User extends ActiveRecord implements IdentityInterface
             ['email', 'string', 'max' => 255],
 
             ['status', 'integer'],
+            ['status', 'required'],
             ['status', 'default', 'value' => self::STATUS_ACTIVE],
             ['status', 'in', 'range' => array_keys(self::getStatusesArray())],
-
-            ['role', 'required', 'on' => ['create', 'assignment']],
 
             [['avatarImage'], 'file', 'skipOnEmpty' => true, 'extensions' => 'png, jpg, jpeg, gif'],
         ];
@@ -278,7 +277,7 @@ class User extends ActiveRecord implements IdentityInterface
         } else {
             $role = [];
         }
-        return implode(', ', $role);
+        return $role;
     }
 
     /**
