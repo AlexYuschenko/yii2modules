@@ -10,7 +10,7 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="auth-item-create">
 
-  <h2><?= Html::encode($this->title) ?></h2>
+  <h1><?= Html::encode($this->title) ?></h1>
 
   <div class="auth-item-form">
 
@@ -21,8 +21,8 @@ $this->params['breadcrumbs'][] = $this->title;
     <?= $form->field($model, 'className')->textInput(['maxlength' => true, 'placeholder' => 'app\\rbac\\ClassName']) ?>
 
     <?php if (!Yii::$app->request->isAjax){ ?>
-            <div class="form-group">
-            <?= Html::submitButton(Yii::t('roles','Create'), ['class' => 'btn btn-success']) ?>
+        <div class="form-group">
+            <?= Html::submitButton(Yii::t('roles','Create'), ['class' => 'btn btn-primary']) ?>
         </div>
     <?php } ?>
 

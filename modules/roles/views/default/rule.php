@@ -10,13 +10,11 @@ $this->title = Yii::t('roles', 'Rules');
 $this->params['breadcrumbs'][] = ['label' => Yii::t('roles', 'Role manager'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="news-index">
+<div class="rules-index">
 
-    <h2><?= Html::encode($this->title) ?></h2>
+    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Add rule', ['add-rule'], ['class' => 'btn btn-success']) ?>
-    </p>
+    <p><?= Html::a('Add rule', ['add-rule'], ['class' => 'btn btn-success']) ?></p>
 
 
 <?=GridView::widget([

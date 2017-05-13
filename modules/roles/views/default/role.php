@@ -9,25 +9,24 @@ use yii\helpers\ArrayHelper;
 $this->title = Yii::t('roles', 'Role manager');
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="news-index">
+<div class="roles-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Role', ['add-role'], ['class' => 'btn btn-success']) ?>
-    </p>
-<?php
-$dataProvider = new ArrayDataProvider([
-    'allModels' => Yii::$app->authManager->getRoles(),
-    'sort' => [
-        'attributes' => ['name', 'description', 'createdAt'],
-        'defaultOrder' => ['createdAt' => SORT_ASC]
-    ],
-    'pagination' => [
-        'pageSize' => 10,
-    ],
-]);
-?>
+    <p><?= Html::a('Create Role', ['add-role'], ['class' => 'btn btn-success']) ?></p>
+
+    <?php
+        $dataProvider = new ArrayDataProvider([
+            'allModels' => Yii::$app->authManager->getRoles(),
+            'sort' => [
+                'attributes' => ['name', 'description', 'createdAt'],
+                'defaultOrder' => ['createdAt' => SORT_ASC]
+            ],
+            'pagination' => [
+                'pageSize' => 10,
+            ],
+        ]);
+    ?>
 
 <?=GridView::widget([
     'dataProvider' => $dataProvider,
@@ -43,14 +42,14 @@ $dataProvider = new ArrayDataProvider([
             'attribute' => 'description',
             'label'     => 'Description'
         ],
-        [
-            'class'     => DataColumn::className(),
-            'label'     => 'Allowed permissions',
-            'format'    => ['html'],
-            'value'     => function($data) {
-                return implode('<br>',array_keys(ArrayHelper::map(Yii::$app->authManager->getPermissionsByRole($data->name), 'description', 'description')));
-            }
-        ],
+        // [
+        //     'class'     => DataColumn::className(),
+        //     'label'     => 'Allowed permissions',
+        //     'format'    => ['html'],
+        //     'value'     => function($data) {
+        //         return implode('<br>',array_keys(ArrayHelper::map(Yii::$app->authManager->getPermissionsByRole($data->name), 'description', 'description')));
+        //     }
+        // ],
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => '{update} {delete}',

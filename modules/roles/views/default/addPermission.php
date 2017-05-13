@@ -12,43 +12,29 @@ $this->params['breadcrumbs'][] = ['label' => Yii::t('roles', 'Role manager'), 'u
 $this->params['breadcrumbs'][] = ['label' => Yii::t('roles', 'Permissions'), 'url' => ['permission']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="news-index">
+<div class="auth-item-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <div class="links-form">
-        <?php
-        if (!empty($error)) {
-            ?>
-            <div class="error-summary">
-                <?php
-                echo implode('<br>', $error);
-                ?>
-            </div>
-        <?php
-        }
-        ?>
+    <div class="auth-item-form">
 
         <?php $form = ActiveForm::begin(); ?>
 
-        <div class="form-group">
-            <?= Html::label('Description'); ?>
-            <?= Html::textInput('description'); ?>
-        </div>
-
-        <div class="form-group">
-            <?= Html::label('Pemission'); ?>
-            <?= Html::textInput('name'); ?>
+        <?= $form->field($model, 'name')->textInput() ?>
+        <div class="help-block">
             * Format module/controller/action<br>
             site/article - access to page site/article<br>
             site - access to all actions at site controller
         </div>
 
+        <?= $form->field($model, 'description')->textInput() ?>
+
         <div class="form-group">
-            <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton(Yii::t('roles', 'Create'), ['class' => 'btn btn-primary']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>
 
     </div>
+
 </div>

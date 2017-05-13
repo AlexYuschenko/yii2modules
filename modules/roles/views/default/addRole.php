@@ -11,45 +11,24 @@ $this->title = Yii::t('roles', 'Create Role');
 $this->params['breadcrumbs'][] = ['label' => 'Role manager', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="news-index">
+<div class="auth-item-create">
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <div class="links-form">
-        <?php
-        if (!empty($error)) {
-            ?>
-            <div class="error-summary">
-                <?php
-                echo implode('<br>', $error);
-                ?>
-            </div>
-        <?php
-        }
-        ?>
+    <div class="auth-item-form">
+
         <?php $form = ActiveForm::begin(); ?>
 
-        <div class="form-group">
-            <?= Html::label('Role name'); ?>
-            <?= Html::textInput('name'); ?>
-            * only latin letter, numbers and _ -
-        </div>
+        <?= $form->field($model, 'name')->textInput(['placeholder' => Yii::t('roles', '* only latin letter, numbers and _ -')]) ?>
+
+        <?= $form->field($model, 'description')->textInput() ?>
 
         <div class="form-group">
-            <?= Html::label('Description'); ?>
-            <?= Html::textInput('description'); ?>
-        </div>
-
-        <div class="form-group">
-            <?= Html::label('Permissions'); ?>
-            <?= Html::checkboxList('permissions', null, $permissions, ['separator' => '<br>']); ?>
-        </div>
-
-        <div class="form-group">
-            <?= Html::submitButton('Create', ['class' => 'btn btn-success']) ?>
+            <?= Html::submitButton(Yii::t('roles', 'Create'), ['class' => 'btn btn-primary']) ?>
         </div>
 
         <?php ActiveForm::end(); ?>
 
     </div>
+
 </div>

@@ -4,9 +4,11 @@ namespace app\modules\roles\models;
 
 use Yii;
 use yii\base\Model;
+use app\modules\roles\traits\ModuleTrait;
 
 class Rule extends Model
 {
+    use ModuleTrait;
     /**
      *
      * @var string 
@@ -33,7 +35,8 @@ class Rule extends Model
      * @param \yii\rbac\Rule $item
      * @param array $config
      */
-    public function __construct($item, $config = []) {
+    public function __construct($item, $config = [])
+    {
         $this->item = $item;
         if ($item !== null) {
             $this->name = $item->name;
@@ -46,12 +49,13 @@ class Rule extends Model
     /**
      * @inheritdoc
      */
-    public function rules() {
+    public function rules()
+    {
         return [
             [['name', 'className'], 'required'],
             [['name'], 'unique', 'when' => function() {
-            return $this->isNewRecord || ($this->item->name != $this->name);
-        }],
+                return $this->isNewRecord || ($this->item->name != $this->name);
+            }],
             [['className'], 'string'],
             [['className'], 'classExists']
         ];
@@ -60,11 +64,12 @@ class Rule extends Model
     /**
      * Check rule name is unique if not add error
      */
-    public function unique() {
+    public function unique()
+    {
         $authManager = Yii::$app->authManager;
         $value = $this->name;
         if ($authManager->getRule($value) !== null) {
-            $message = Yii::t('yii', '{attribute} "{value}" has already been taken.');
+            $message = Yii::t('roles', '{attribute} "{value}" has already been taken.');
             $params = [
                 'attribute' => $this->getAttributeLabel('name'),
                 'value' => $value,
@@ -76,27 +81,29 @@ class Rule extends Model
     /**
      * Validate class exists
      */
-    public function classExists() {
+    public function classExists()
+    {
         $message = null;
         if (!class_exists($this->className)) {
-            $message = 'Class "{className}" not exist';
+            $message = Yii::t('roles', 'Class "{className}" not exist', ['className' => $this->className]);
         } else if (!is_subclass_of($this->className, yii\rbac\Rule::className())) {
-            $message = 'Class "{className}" must extends yii\rbac\Rule';
+            $message = Yii::t('roles', 'Class "{className}" must extends yii\rbac\Rule', ['className' => $this->className]);
         } else if ((new $this->className())->name === null) {
-            $message = 'The "{className}::\$name" is not set';
+            $message = Yii::t('roles', 'The "{className}::\$name" is not set', ['className' => $this->className]);
         } else if ((new $this->className())->name !== $this->name) {
-            $message = 'The "{className}::\$name" is incorrect with the name of rule you have set';
+            $message = Yii::t('roles', 'The "{className}::\$name" is incorrect with the name of rule you have set', ['className' => $this->className]);
         }
 
         if ($message !== null) {
-            $this->addError('className', Yii::t('roles', $message, ['className' => $this->className]));
+            $this->addError('className', $message);
         }
     }
 
     /**
      * @inheritdoc
      */
-    public function attributeLabels() {
+    public function attributeLabels()
+    {
         return [
             'name' => Yii::t('roles', 'Rule Name'),
             'className' => Yii::t('roles', 'Class Name'),
@@ -108,7 +115,8 @@ class Rule extends Model
      * @param type $id
      * @return null|static
      */
-    public static function find($id) {
+    public static function find($id)
+    {
         $item = Yii::$app->authManager->getRule($id);
         if ($item !== null) {
             return new self($item);
@@ -120,7 +128,8 @@ class Rule extends Model
      * Save model to authManager
      * @return boolean
      */
-    public function save() {
+    public function save()
+    {
         if (!$this->validate()) {
             return false;
         }
@@ -148,7 +157,8 @@ class Rule extends Model
      * @return  boolean whether the rule is successfully removed
      * @throws \yii\base\Exception When call delete() function in new record
      */
-    public function delete() {
+    public function delete()
+    {
         if ($this->isNewRecord) {
             throw new \yii\base\Exception("Call delete() function in new record");
         }
