@@ -30,9 +30,13 @@ class m170424_080455_create_roles extends Migration
         $admin->description = 'Can do anything including managing users';
         $rbac->add($admin);
 
-        $rbac->addChild($admin, $manager);
-        $rbac->addChild($manager, $user);
-        $rbac->addChild($user, $guest);
+        sleep(1);
+
+        $adminPermit = $rbac->createPermission('admin/*');
+        $adminPermit->description = 'Access to Admin module';
+        $rbac->add($adminPermit);
+
+        $rbac->addChild($admin, $adminPermit);
 
         $rbac->assign(
             $admin,

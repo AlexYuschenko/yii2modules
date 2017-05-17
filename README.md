@@ -40,73 +40,97 @@ php yii migrate
 Configure routes
 
 ```php
-'urlManager' => [
-    'enablePrettyUrl' => true,
-    'showScriptName' => false,
-    'normalizer' => [
-        'class' => 'yii\web\UrlNormalizer',
-    ],
-    'rules' => [
-        [
-            'class' => 'yii\web\GroupUrlRule',
-            'prefix' => 'admin',
-            'routePrefix' => 'admin',
+        'urlManager' => [
+            'enablePrettyUrl' => true,
+            'showScriptName' => false,
+            'normalizer' => [
+                'class' => 'yii\web\UrlNormalizer',
+            ],
             'rules' => [
-                '' => 'default/index',
+                [
+                    'class' => 'yii\web\GroupUrlRule',
+                    'prefix' => 'admin',
+                    'routePrefix' => 'admin',
+                    'rules' => [
+                        '' => 'default/index',
+                        '<module:[\w\-]+>' => '<module>/default/index',
+                        '<module:[\w\-]+>/<id:\d+>' => '<module>/default/view',
+                        '<module:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/default/<action>',
+                        '<module:[\w\-]+>/<action:[\w\-]+>' => '<module>/default/<action>',
+                        '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/view',
+                        '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
+                        '<module:[\w\-]+>/<controller:[\w\-]+>' => '<module>/<controller>/index',
+                    ],
+                ],
+                '' => 'site/default/index',
+                'contact' => 'site/contact/index',
+                '<action:error>' => 'site/default/<action>',
+                '<action:(login|logout|signup|email-confirm|password-reset-request|password-reset)>' => 'user/default/<action>',
                 '<module:[\w\-]+>' => '<module>/default/index',
-                '<module:[\w\-]+>/<id:\d+>' => '<module>/default/view',
-                '<module:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/default/<action>',
+                '<module:[\w\-]+>/<controller:[\w\-]+>' => '<module>/<controller>/index',
+                '<module:[\w\-]+>/<controller:[\w\-]+>/<action:[\w-]+>' => '<module>/<controller>/<action>',
                 '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/view',
                 '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
-                '<module:[\w\-]+>/<controller:[\w\-]+>' => '<module>/<controller>/index',
             ],
         ],
-        '' => 'site/default/index',
-        'contact' => 'site/contact/index',
-        '<action:error>' => 'site/default/<action>',
-        '<action:(login|logout|signup|email-confirm|password-reset-request|password-reset)>' => 'user/default/<action>',
-        '<module:[\w\-]+>' => '<module>/default/index',
-        '<module:[\w\-]+>/<controller:[\w\-]+>' => '<module>/<controller>/index',
-        '<module:[\w\-]+>/<controller:[\w\-]+>/<action:[\w-]+>' => '<module>/<controller>/<action>',
-        '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>' => '<module>/<controller>/view',
-        '<module:[\w\-]+>/<controller:[\w\-]+>/<id:\d+>/<action:[\w\-]+>' => '<module>/<controller>/<action>',
-    ],
-],
 ```
 
 Configure `modules` section of your application.
 
 ```php
-'modules' => [
-    'admin' => [
-        'class' => 'app\modules\admin\Module',
-        'layout' => '@app/views/layouts/admin',
-        'modules' => [
-            'user' => [
-                'class' => 'app\modules\user\Module',
-                'controllerNamespace' => 'app\modules\user\controllers\backend',
-                'viewPath' => '@app/modules/user/views/backend',
-            ],
-        ]
+    'modules' => [
+        'admin' => [
+            'class' => 'app\modules\admin\Module',
+            'layout' => '@app/views/layouts/admin',
+            'modules' => [
+                'user' => [
+                    'class' => 'app\modules\user\Module',
+                    'controllerNamespace' => 'app\modules\user\controllers\backend',
+                    'viewPath' => '@app/modules/user/views/backend',
+                ],
+            ]
+        ],
+        'site' => [
+            'class' => 'app\modules\site\Module',
+        ],
+        'user' => [
+            'class' => 'app\modules\user\Module',
+            'passwordResetTokenExpire' => 3600,
+        ],
+        ...
     ],
-    'site' => [
-        'class' => 'app\modules\site\Module',
-    ],
-    'user' => [
-        'class' => 'app\modules\user\Module',
-        'passwordResetTokenExpire' => 3600,
-    ],
-    ...
-],
 ```
 
 Configure `bootstrap` section of your application.
 
 ```php
-'bootstrap' => [
-    'app\modules\admin\Bootstrap',
-    'app\modules\site\Bootstrap',
-    'app\modules\user\Bootstrap',
-    ...
-],
+    'bootstrap' => [
+        'app\modules\admin\Bootstrap',
+        'app\modules\site\Bootstrap',
+        'app\modules\user\Bootstrap',
+        'app\modules\roles\Bootstrap',
+        ...
+    ],
+```
+
+Configure `components` section of your application.
+
+```php
+    'user' => [
+        'identityClass' => 'app\modules\user\models\User',
+        'loginUrl' => 'login',
+        'enableAutoLogin' => true,
+    ],
+```
+
+Declare AccessControl in the application config as behavior
+
+```php
+    'as access' => [
+        'class' => 'app\modules\roles\filters\AccessControl',
+        'allowActions' => [
+            'site/*',
+            'user/*',
+        ]
+    ],
 ```

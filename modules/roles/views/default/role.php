@@ -42,14 +42,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'attribute' => 'description',
             'label'     => 'Description'
         ],
-        // [
-        //     'class'     => DataColumn::className(),
-        //     'label'     => 'Allowed permissions',
-        //     'format'    => ['html'],
-        //     'value'     => function($data) {
-        //         return implode('<br>',array_keys(ArrayHelper::map(Yii::$app->authManager->getPermissionsByRole($data->name), 'description', 'description')));
-        //     }
-        // ],
         [
             'class' => 'yii\grid\ActionColumn',
             'template' => '{update} {delete}',

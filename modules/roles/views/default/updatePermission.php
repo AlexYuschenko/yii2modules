@@ -20,7 +20,15 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php $form = ActiveForm::begin(); ?>
 
-        <?= $form->field($model, 'name')->textInput() ?>
+        <?php
+            if (in_array($model->name, $this->context->module->defaultPermissions) && $model->name == Yii::$app->request->get('name')) {
+                $permit_options = ['readonly' => 'readonly'];
+            } else {
+                $permit_options = [];
+            }
+        ?>
+
+        <?= $form->field($model, 'name')->textInput($permit_options) ?>
 
         <?= $form->field($model, 'description')->textInput() ?>
 

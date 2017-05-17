@@ -19,7 +19,7 @@ use yii\filters\VerbFilter;
 class DefaultController extends Controller
 {
     protected $pattern4Role = '/^[a-zA-Z0-9_-]+$/';
-    protected $pattern4Permission = '/^[a-zA-Z0-9_\/-]+$/';
+    protected $pattern4Permission = '/^[a-zA-Z0-9_\*\/-]+$/';
 
     /**
      * @inheritdoc

@@ -24,7 +24,7 @@ $this->params['breadcrumbs'][] = $this->title;
         <div class="help-block">
             * Format module/controller/action<br>
             site/article - access to page site/article<br>
-            site - access to all actions at site controller
+            site/* - access to all actions at site controller
         </div>
 
         <?= $form->field($model, 'description')->textInput() ?>

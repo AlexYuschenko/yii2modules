@@ -37,7 +37,7 @@ $this->params['breadcrumbs'][] = $this->title;
         $dataProvider = new ArrayDataProvider([
             'allModels' => $data,
             'sort' => [
-                'attributes' => $attributes,
+                'attributes' => ['name', 'createdAt'],
                 'defaultOrder' => ['createdAt' => SORT_ASC]
             ],
         ]);
@@ -64,6 +64,9 @@ foreach ($roles as $role => $roleData) {
         'label' => $roleData->name,
         'format' => 'html',
         'value' => function($model, $key, $index, $column) {
+            if ($column->label == 'admin' && in_array($key, $this->context->module->defaultPermissions)) {
+                return in_array($key, $model->{$column->attribute}) ? Yii::t('roles', 'Yes') : Yii::t('roles', 'No');
+            }
             if (in_array($key, $model->{$column->attribute})) {
                 return Html::a(Yii::t('roles', 'Yes'), ['remove-role-permission', 'role' => $column->label, 'permission' => $key]);
             } else {
@@ -84,12 +87,14 @@ $columns[] = [
             ]);
         },
         'delete' => function ($url, $model) {
-            return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete-permission','name' => $model->name]), [
-                'title' => Yii::t('roles', 'Delete'),
-                'data-confirm' => Yii::t('roles', 'Are you sure you want to delete this item?'),
-                'data-method' => 'post',
-                'data-pjax' => '0',
-            ]);
+            if (!in_array($model->name, $this->context->module->defaultPermissions)) {
+                return Html::a('<span class="glyphicon glyphicon-trash"></span>', Url::toRoute(['delete-permission','name' => $model->name]), [
+                    'title' => Yii::t('roles', 'Delete'),
+                    'data-confirm' => Yii::t('roles', 'Are you sure you want to delete this item?'),
+                    'data-method' => 'post',
+                    'data-pjax' => '0',
+                ]);
+            }
         }
     ]
 ];

@@ -19,8 +19,8 @@ use yii\web\ForbiddenHttpException;
  *
  * ~~~
  * 'as access' => [
- *     'class' => 'app\filters\AccessControl',
- *     'allowActions' => ['site/login', 'site/error']
+ *     'class' => 'app\modules\roles\filters\AccessControl',
+ *     'allowActions' => ['site/*', 'user/*']
  * ]
  * ~~~
  *
@@ -64,16 +64,32 @@ class AccessControl extends ActionFilter
      */
     public function beforeAction($action)
     {
-        $actionId = $action->getUniqueId();
         $user = $this->getUser();
 
+        $actionId = $action->getUniqueId();
         if ($user->can($actionId)) {
             return true;
         }
-        $obj = $action->controller;
-        if ($user->can($obj->getUniqueId())) {
+
+        $controllerId = $action->controller->getUniqueId() . '/*';
+        if ($controllerId !== '/*' && $user->can($controllerId)) {
           return true;
         }
+
+        if ($this->owner instanceof Module) {
+            // convert action uniqueId into an ID relative to the module
+            $moduleId = $action->controller->module->getUniqueId() . '/*';
+            if ($moduleId !== '/*' && $user->can($moduleId)) {
+              return true;
+            }
+            if ($action->controller->module->module instanceof Module) {
+                $parentModuleId = $action->controller->module->module->getUniqueId() . '/*';
+                if ($parentModuleId !== '/*' && $user->can($parentModuleId)) {
+                  return true;
+                }
+            }
+        }
+
         $this->denyAccess($user);
     }
 
@@ -94,7 +110,7 @@ class AccessControl extends ActionFilter
     }
 
     /**
-     * @inheritdoc
+     * Returns a value indicating whether the filter is active for the given action.
      */
     protected function isActive($action)
     {
