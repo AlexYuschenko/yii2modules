@@ -7,7 +7,7 @@ use yii\helpers\Html;
 use yii\helpers\ArrayHelper;
 
 $this->title = Yii::t('roles', 'Permissions');
-$this->params['breadcrumbs'][] = ['label' => Yii::t('roles', 'Role manager'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('roles', 'Role manager'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="permissions-index">

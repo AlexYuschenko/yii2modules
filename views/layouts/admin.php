@@ -33,6 +33,37 @@ if (isset($this->params['breadcrumbs'])) {
 
     $menuItems[] = ['label' => Yii::t('app', 'Home'), 'url' => ['/admin/default/index']];
     $menuItems[] = [
+        'label' => Yii::t('app', 'Hotels'),
+        'items' => [
+            [
+                'label' => Yii::t('app', 'Hotels'),
+                'url'   => ['/admin/hotel'],
+                'active' => $context->module->id == 'hotel' && $context->action->controller->id == 'default'
+            ],
+            [
+                'label' => Yii::t('app', 'Hotel Types'),
+                'url'   => ['/admin/hotel/hotel-type'],
+                'active' => $context->module->id == 'hotel' && $context->action->controller->id == 'hoteltype'
+            ],
+            [
+                'label' => Yii::t('app', 'Rooms'),
+                'url'   => ['/admin/hotel/room'],
+                'active' => $context->module->id == 'hotel' && $context->action->controller->id == 'room'
+            ],
+            [
+                'label' => Yii::t('app', 'Room Types'),
+                'url'   => ['/admin/hotel/room-type'],
+                'active' => $context->module->id == 'hotel' && $context->action->controller->id == 'roomtype'
+            ],
+            [
+                'label' => Yii::t('app', 'Attributes'),
+                'url'   => ['/admin/hotel/attributes'],
+                'active' => $context->module->id == 'hotel' && $context->action->controller->id == 'attributes'
+            ],
+        ],
+        'active' => $context->module->id == 'hotel',
+    ];
+    $menuItems[] = [
         'label' => Yii::t('app', 'Roles'),
         'items' => [
             [

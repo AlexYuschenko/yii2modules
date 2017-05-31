@@ -20,12 +20,7 @@ $this->params['breadcrumbs'][] = $this->title;
 
         <?php $form = ActiveForm::begin(); ?>
 
-        <?= $form->field($model, 'name')->textInput() ?>
-        <div class="help-block">
-            * Format module/controller/action<br>
-            site/article - access to page site/article<br>
-            site/* - access to all actions at site controller
-        </div>
+        <?= $form->field($model, 'name')->textInput()->hint(Yii::t('roles', '* Format module/controller/action<br> site/article - access to page site/article<br> site/* - access to all actions at site controller')) ?>
 
         <?= $form->field($model, 'description')->textInput() ?>
 

@@ -6,21 +6,22 @@ use yii\helpers\Url;
 use yii\grid\GridView;
 use yii\widgets\Pjax;
 use yii\jui\DatePicker;
-use app\modules\user\widgets\AvatarColumn;
+
 /* @var $this yii\web\View */
-/* @var $searchModel app\modules\user\models\backend\UserSearch */
+/* @var $searchModel app\modules\hotel\models\AttributesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = Yii::t('user', 'Users');
+$this->title = Yii::t('hotel', 'Attributes');
+$this->params['breadcrumbs'][] = ['label' => Yii::t('roles', 'Hotels'), 'url' => ['default/index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
-<div class="user-index">
+<div class="attributes-index">
 
     <h1><?= Html::encode($this->title) ?></h1>
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
     <p>
-        <?= Html::a(Yii::t('user', 'Create User'), ['create'], ['class' => 'btn btn-success']) ?>
+        <?= Html::a(Yii::t('hotel', 'Create Attributes'), ['create'], ['class' => 'btn btn-success']) ?>
     </p>
 <?php Pjax::begin(); ?>
     <?= GridView::widget([
@@ -28,39 +29,16 @@ $this->params['breadcrumbs'][] = $this->title;
         'filterModel' => $searchModel,
         'columns' => [
             [
-                'attribute' => 'id',
+                'attribute' => 'aid',
                 'options' => [
                     'style' => 'width:80px;',
                 ],
             ],
+            'name',
             [
-                'class' => AvatarColumn::className(),
-                'attribute' => 'avatar',
-                'attributes' => [
-                    'class'  => 'file-preview-image img-circle',
-                    'width'  => '40',
-                    'height' => '40'
-                ],
-            ],
-            [
-                'attribute' => 'username',
-                'format' => 'raw',
-                'value' => function($model) {
-                    return Html::a(Html::encode($model->username), Url::to(['/admin/user/' . $model->id]));
-                },
-            ],
-            'first_name',
-            'last_name',
-            [
-                'attribute' => 'role',
-                'format' => 'raw',
-                'filter' => ArrayHelper::map(Yii::$app->authManager->getRoles(), 'name', 'name'),
-                'value' => function($model) {
-                    return Html::ul($model->userRole);
-                },
-                'options' => [
-                    'style' => 'width:150px;',
-                ],
+                'attribute' => 'type',
+                'filter' => $searchModel->attributeTypeArray,
+                'value' => 'attributeTypeName',
             ],
             [
                 'attribute' => 'created_at',
@@ -75,11 +53,6 @@ $this->params['breadcrumbs'][] = $this->title;
                         'class' => 'form-control'
                     ]
                 ]),
-            ],
-            [
-                'attribute' => 'status',
-                'filter' => $searchModel->statusesArray,
-                'value' => 'statusName',
             ],
             [
                 'class' => 'yii\grid\ActionColumn',
