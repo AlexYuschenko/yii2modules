@@ -87,6 +87,14 @@ Configure `modules` section of your application.
                     'controllerNamespace' => 'app\modules\user\controllers\backend',
                     'viewPath' => '@app/modules/user/views/backend',
                 ],
+                'roles' => [
+                    'class' => 'app\modules\roles\Module',
+                ],
+                'hotel' => [
+                    'class' => 'app\modules\hotel\Module',
+                    'controllerNamespace' => 'app\modules\hotel\controllers\backend',
+                    'viewPath' => '@app/modules/hotel/views/backend',
+                ],
             ]
         ],
         'site' => [
@@ -96,7 +104,9 @@ Configure `modules` section of your application.
             'class' => 'app\modules\user\Module',
             'passwordResetTokenExpire' => 3600,
         ],
-        ...
+        'hotel' => [
+            'class' => 'app\modules\hotel\Module',
+        ],
     ],
 ```
 
@@ -104,10 +114,12 @@ Configure `bootstrap` section of your application.
 
 ```php
     'bootstrap' => [
+        'log',
         'app\modules\admin\Bootstrap',
         'app\modules\site\Bootstrap',
         'app\modules\user\Bootstrap',
         'app\modules\roles\Bootstrap',
+        'app\modules\hotel\Bootstrap',
         ...
     ],
 ```
@@ -115,11 +127,24 @@ Configure `bootstrap` section of your application.
 Configure `components` section of your application.
 
 ```php
-    'user' => [
-        'identityClass' => 'app\modules\user\models\User',
-        'loginUrl' => 'login',
-        'enableAutoLogin' => true,
-    ],
+        'user' => [
+            'identityClass' => 'app\modules\user\models\User',
+            'loginUrl' => 'login',
+            'enableAutoLogin' => true,
+        ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+            'defaultRoles' => ['guest'],
+        ],
+        'assetManager' => [
+            'forceCopy' => true,
+            'bundles' => [
+                'app\widgets\gmaplocation\GMapLocationAssets' => [
+                    'key' => 'AIzaSyAnBep9owPuKNGZ239F9CbZkMqfR8N7URo',
+                    'language' => 'en',
+                ]
+            ]
+        ],
 ```
 
 Declare AccessControl in the application config as behavior
@@ -130,6 +155,7 @@ Declare AccessControl in the application config as behavior
         'allowActions' => [
             'site/*',
             'user/*',
+            'hotel/geo-api/*',
         ]
     ],
 ```
