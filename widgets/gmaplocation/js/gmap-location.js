@@ -23,7 +23,7 @@
             geocoder = new google.maps.Geocoder();
             var mapOptions = {
                 center: new google.maps.LatLng(20, 0),
-                zoom: 2,
+                zoom: options.zoom,
                 mapTypeId: google.maps.MapTypeId.ROADMAP,
                 panControl: true
             };

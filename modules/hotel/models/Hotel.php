@@ -40,6 +40,9 @@ use yii\behaviors\TimestampBehavior;
 class Hotel extends \yii\db\ActiveRecord
 {
     use ModuleTrait;
+
+    public $photos;
+
     /**
      * @inheritdoc
      */
@@ -73,6 +76,7 @@ class Hotel extends \yii\db\ActiveRecord
             [['hotel_type'], 'string', 'max' => 100],
             [['hotel_type'], 'exist', 'skipOnError' => true, 'targetClass' => HotelType::className(), 'targetAttribute' => ['hotel_type' => 'name']],
             [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::className(), 'targetAttribute' => ['user_id' => 'id']],
+            [['photos'], 'each', 'rule' => ['string']],
         ];
     }
 
@@ -146,6 +150,6 @@ class Hotel extends \yii\db\ActiveRecord
      */
     public function getCountry()
     {
-        return $this->hasOne(Country::className(), ['code' => 'country']);
+        return $this->hasOne(\lembadm\geodb\models\Country::className(), ['iso' => 'country']);
     }
 }

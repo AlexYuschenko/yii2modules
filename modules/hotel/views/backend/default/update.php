@@ -18,6 +18,7 @@ $this->params['breadcrumbs'][] = Yii::t('hotel', 'Update');
 
     <?= $this->render('_form', [
         'model' => $model,
+        'photos' => $photos,
     ]) ?>
 
 </div>

@@ -8,11 +8,15 @@ use yii\helpers\ArrayHelper;
 use app\modules\user\models\User;
 use app\modules\hotel\models\HotelType;
 use app\modules\hotel\models\Country;
-use kartik\time\TimePicker;
 
 use app\widgets\gmaplocation\GMapLocationAssets;
 use app\widgets\gmaplocation\GMapLocationWidget;
+
+use kartik\time\TimePicker;
 use kartik\select2\Select2;
+use kartik\file\FileInput;
+
+use yii\httpclient\Client;
 
 /* @var $this yii\web\View */
 /* @var $model app\modules\hotel\models\backend\Hotel */
@@ -68,12 +72,101 @@ $this->registerJs(new JsExpression('
                 </div>
             </div>
 
+            <?php
+                $key = 'hotels';
+                $preview = [];
+                $initialPreviewConfig = [];
+                if (!$model->isNewRecord) {
+                    // foreach (json_decode($model->files) as $fid => $file) {
+                    //     $preview[] = Html::img('/uploads/' . $model->id . '/' . $file, [
+                    //         'class' => 'file-preview-image',
+                    //         'alt' => '',
+                    //         'title' => $file
+                    //     ]);
+                    //     $url = Url::to(['projects/file-delete', 'id' => $key, 'key' => $fid]);
+                    //     $initialPreviewConfig[] = ['url' => $url, 'caption' => $file];
+                    // }
+                }
+            ?>
+            <?= $form->field($photos, 'photos[]')->widget(FileInput::classname(), [
+                'options' => [
+                    'accept' => 'image/*',
+                    'multiple' => true
+                ],
+                'pluginOptions' => [
+                    // 'previewFileType' => 'any',
+                    'uploadUrl' => Url::to(['photo-upload']),
+                    'deleteUrl' => Url::to(['/hotel/photo-delete']),
+                    'uploadExtraData' => ['folderId' => $key],
+                    'uploadAsync' => false,
+                    'maxFileCount' => 10,
+                    'minFileCount' => 1,
+                    'validateInitialCount' => true,
+                    'overwriteInitial' => false,
+                    //'autoReplace' => true,
+                    'browseClass' => 'btn btn-primary btn-block',
+                    'browseIcon' => '<i class="glyphicon glyphicon-camera"></i> ',
+                    //'browseLabel' => Yii::t('app', 'Select file(s)'),
+                    'showUpload' => false,
+                    'showRemove' => false,
+                    'showCaption' => false,
+                    'showBrowse' => false,
+                    'showPreview' => true,
+                    'initialPreview' => $preview,
+                    'initialPreviewShowDelete' => true,
+                    'initialPreviewConfig' => $initialPreviewConfig,
+                    'dropZoneEnabled' => true,
+                    'browseOnZoneClick' => true,
+                    'dropZoneClickTitle' => Yii::t('hotel', ' or click to select'),
+                    'fileActionSettings' => [
+                        // 'uploadClass' => 'hide',
+                        'showDrag' => true,
+                    ],
+                    'layoutTemplates' => [
+                        'footer' => '<div class="file-thumbnail-footer">
+                                ' . Html::activeHiddenInput($model, 'photos[]', ['value' => '{caption}']) . '
+                                <div class="file-footer-caption" title="{caption}">{caption}<br></div>
+                                {size} {progress}
+                                <div class="file-actions">
+                                    <div class="file-footer-buttons">
+                                         {actions}
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </div>
+
+                            </div>',
+                    ],
+                ],
+                'pluginEvents' => [
+                    'filepredelete' => "function(event, key) {
+                        return (!confirm('" . Yii::t('hotel', 'Are you sure you want to delete ?') . "')); 
+                    }",
+                    'filedelete' => "function(event, key) { console.log('File is delete'); }",
+                    'filebatchselected' => "function(event, files) {
+                        console.log(files);
+                        // trigger upload method immediately after files are selected
+                        $(this).fileinput('upload');
+                    }",
+                    'filebatchuploadsuccess' => "function(event, data, previewId, index) {
+                        var form = data.form, files = data.files, extra = data.extra,
+                        response = data.response, reader = data.reader,
+                        filenames = response.filenames,
+                        field = '#" . Html::getInputId($model, 'photos[]') . "';
+                        console.log(field);
+                        console.log('File batch upload success');
+                        console.log(data);
+                        $.each(filenames, function(index, value){
+                            $(field).last().before($(field).clone().val(value));
+                        });
+                    }",
+                ]
+            ]); ?>
+
         </div>
         <div class="col-md-6">
 
             <?= $form->field($model, 'country')
                 ->widget(Select2::className(), [
-                    'data'          => [],
                     'options'       => ['placeholder' => Yii::t('hotel', 'Select a Country ...')],
                     'pluginOptions' => [
                         'ajax' => [
@@ -87,9 +180,9 @@ $this->registerJs(new JsExpression('
 
             <?= $form->field($model, 'region')
                 ->widget(Select2::className(), [
-                    'data'          => [],
+                    // 'data'          => [],
                     'options'       => ['placeholder' => Yii::t('hotel', 'Select a Region ...')],
-                    'disabled'      => true,
+                    'disabled'      => empty($model->country),
                     'pluginOptions' => [
                         'ajax' => [
                             'url'      => Url::to('/hotel/geo-api/regions'),
@@ -105,9 +198,9 @@ $this->registerJs(new JsExpression('
 
             <?= $form->field($model, 'city')
                 ->widget(Select2::className(), [
-                    'data'          => [],
+                    // 'data'          => [],
                     'options'       => ['placeholder' => Yii::t('hotel', 'Select a City ...')],
-                    'disabled'      => true,
+                    'disabled'      => empty($model->country),
                     'pluginOptions' => [
                         'ajax' => [
                             'url'      => Url::to('/hotel/geo-api/cities'),
@@ -131,8 +224,9 @@ $this->registerJs(new JsExpression('
                     'attributeCity' => 'city',
                     'mapWrapper' => 'source-map',
                     'draggable' => true,
+                    'zoom' => !empty($model->address) ? 14 : 2,
                     'textOptions' => [
-                        'disabled' => true,
+                        'disabled' => empty($model->city),
                         'class' => 'form-control',
                     ],
                 ]);

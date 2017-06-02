@@ -87,6 +87,11 @@ class GMapLocationWidget extends InputWidget
     public $renderWidgetMap;
 
     /**
+     * @var int zoom for custom map
+     */
+    public $zoom = 2;
+
+    /**
      * Run widget
      */
     public function run()
@@ -115,12 +120,13 @@ class GMapLocationWidget extends InputWidget
         }
 
         $jsOptions = ArrayHelper::merge($this->jsOptions, [
-            'field' => $this->attribute,
-            'model' => strtolower(\yii\helpers\StringHelper::basename(get_class($this->model))),
-            'address'           => '#' . $address,
-            'latitude'          => '#' . $latitude,
-            'longitude'         => '#' . $longitude,
-            'draggable'         => $this->draggable,
+            'field'     => $this->attribute,
+            'model'     => strtolower(\yii\helpers\StringHelper::basename(get_class($this->model))),
+            'address'   => '#' . $address,
+            'latitude'  => '#' . $latitude,
+            'longitude' => '#' . $longitude,
+            'draggable' => $this->draggable,
+            'zoom'      => $this->zoom,
         ]);
         // message about not founded addess
         if (!isset($jsOptions['addressNotFound'])) {

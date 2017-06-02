@@ -3,13 +3,16 @@
 namespace app\modules\hotel\controllers\backend;
 
 use Yii;
+use app\modules\hotel\models\Photos;
 use app\modules\hotel\models\backend\Hotel;
 use app\modules\hotel\models\backend\HotelSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
-use dosamigos\google\maps\LatLng;
-// use yii\httpclient\Client;
+use yii\web\Response;
+use yii\web\UploadedFile;
+use yii\helpers\Html;
+use yii\helpers\Url;
 
 /**
  * DefaultController implements the CRUD actions for Hotel model.
@@ -66,12 +69,20 @@ class DefaultController extends Controller
     public function actionCreate()
     {
         $model = new Hotel();
+        $photos = new Photos();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            foreach (array_unique($model->photos) as $key => $photo) {
+                $photo = new Photos();
+                $photo->uri = $photo;
+                $photo->hotel_id = $model->hid;
+                $photo->save();
+            }
             return $this->redirect(['view', 'id' => $model->hid]);
         } else {
             return $this->render('create', [
                 'model' => $model,
+                'photos' => $photos,
             ]);
         }
     }
@@ -85,12 +96,14 @@ class DefaultController extends Controller
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
+        $photos = new Photos();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->hid]);
         } else {
             return $this->render('update', [
                 'model' => $model,
+                'photos' => $photos,
             ]);
         }
     }
@@ -106,6 +119,51 @@ class DefaultController extends Controller
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function actionPhotoUpload()
+    {
+        $photos = new Photos();
+
+        if (Yii::$app->request->isAjax) {
+
+            $photos->photos = UploadedFile::getInstances($photos, 'photos');
+            if (count($photos->photos)) {
+                $filenames = [];
+                $preview = [];
+                $initialPreviewConfig = [];
+                foreach ($photos->photos as $key => $photo) {
+                    $photos->photos[$key]->name = time() . '-' . $photo->name;
+                }
+                $photos->upload(Yii::$app->request->post('folderId'));
+                foreach ($photos->photos as $key => $photo) {
+                    $preview[] = Html::img('/uploads/' . Yii::$app->request->post('folderId') . '/' . $photo->name, [
+                        'class' => 'file-preview-image',
+                        'alt' => '',
+                        'height' => '160px'
+                    ]);
+                    $url = Url::to(['/photo-delete', 'id' => 'hotels']);
+                    $initialPreviewConfig[] = [
+                        'caption' => $photo->name,
+                        'url' => $url,
+                        'key' => $key,
+                    ];
+                    $filenames[] = $photo->name;
+                }
+                Yii::$app->response->format = Response::FORMAT_JSON;
+                // return [];
+                return [
+                    'initialPreview' => $preview,
+                    'initialPreviewConfig' => $initialPreviewConfig,
+                    'filenames' => $filenames,
+                ];
+            }
+        }
+        Yii::$app->response->format = Response::FORMAT_JSON;
+        return ['error' => 'Server error'];
     }
 
     /**

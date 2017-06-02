@@ -87,7 +87,7 @@ class m170520_065852_create_hotel_table extends Migration
             'user_id'     => $this->integer()->defaultValue(0),
             'name'        => $this->string()->notNull(),
             'description' => $this->text(),
-            'stars'       => $this->smallInteger()->notNull()->defaultValue(0),
+            'stars'       => $this->smallInteger()->defaultValue(0),
             'country'     => $this->string(),
             'region'      => $this->string(),
             'city'        => $this->string(),
